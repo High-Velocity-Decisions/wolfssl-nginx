@@ -45,7 +45,7 @@ RUN git clone https://github.com/open-quantum-safe/liboqs.git && \
 # Build and install wolfSSL (version 5.7.4)
 RUN git clone https://github.com/wolfSSL/wolfssl.git && \
     cd wolfssl && git checkout bdd62314f00fca0e216bf8c963c8eeff6327e0cb && ./autogen.sh && \
-    ./configure --prefix=/usr/local --enable-nginx --enable-experimental --with-liboqs && \
+    ./configure --host=aarch64-linux-gnu --prefix=/usr/local --enable-nginx --enable-experimental --with-liboqs && \
     make && make all && make install
 
 # Download and prepare Nginx source code
@@ -70,10 +70,11 @@ COPY --from=build /usr/local /usr/local
 COPY --from=build /usr/src/nginx-1.21.4/objs/nginx /usr/local/nginx/sbin/nginx
 
 # Copy Nginx configuration file (adjust as needed)
-COPY conf/nginx.conf /usr/local/nginx/conf/nginx.conf
+COPY conf/ /usr/local/nginx/conf/
 
 # Expose port 443 for HTTPS
 EXPOSE 443
-
+COPY --from=build /usr/local/lib/libwolfssl.so* /usr/lib/
+RUN mkdir /usr/local/nginx/logs
 # Start Nginx server
 CMD ["/usr/local/nginx/sbin/nginx", "-g", "daemon off;"]
