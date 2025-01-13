@@ -1,4 +1,6 @@
 # wolfssl-nginx
+## Building
+`docker buildx build --platform linux/arm64 -t nginx-wolfssl-armv8 . --load`
 
 ## wolfSSL Support in Nginx
 
